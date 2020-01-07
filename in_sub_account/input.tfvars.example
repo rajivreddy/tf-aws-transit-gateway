@@ -1,0 +1,14 @@
+# First account
+shared_credentials_file = "/Users/username/.aws/credentials"
+profile = "destaccount"
+region = "ap-southeast-1"
+
+
+share_arn = "arn:aws:ram:ap-southeast-1:xxx:resource-share/xxxx"
+
+
+### VPC attachment in shared services
+name = "dest"
+transit_gateway_id = "tgw-xxxx"
+vpc_id = "vpc-xxxx"
+subnet_ids = ["subnet-xxxx","subnet-xxxx"]

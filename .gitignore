@@ -1,3 +1,5 @@
-.terraform/*
+*.terraform*
 terraform*
 input.tfvars
+
+in_sub_account/input.tfvars
