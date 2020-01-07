@@ -1,0 +1,5 @@
+shared_credentials_file = "/Users/username/.aws/credentials"
+profile = "default"
+region = ap-southeast-1
+name = "Example TSG"
+description = "test TSG"

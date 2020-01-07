@@ -5,7 +5,7 @@ provider "aws" {
   profile                 = var.profile
 }
 
-resource "aws_ec2_transit_gateway" "example" {
+resource "aws_ec2_transit_gateway" "this" {
   description = var.description
   dns_support = var.dns_support
   amazon_side_asn = var.amazon_side_asn
@@ -13,4 +13,16 @@ resource "aws_ec2_transit_gateway" "example" {
   default_route_table_association = var.default_route_table_association
   default_route_table_propagation = var.default_route_table_propagation
   vpn_ecmp_support = var.vpn_ecmp_support
+  tags = merge(
+    {
+      "Name" = var.name
+    },
+    var.additional_tags
+  )
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [
+      tags,
+    ]
+  }
 }
