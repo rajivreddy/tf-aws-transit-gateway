@@ -17,3 +17,7 @@ ip_address      = "192.168.1.1"
 allow_external_principals = "true"
 
 ram_principals = ["285913126164"]
+
+### VPC attachment in shared services
+vpc_id = "vpc-xxxxx"
+subnet_ids = ["subnet-xxxx","subnet-xxxx","subnet-xxx"]

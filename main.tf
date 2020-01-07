@@ -10,6 +10,7 @@ locals {
   crate_ram_resource_share         = var.create_tg ? 1 : 0
   create_ram_resource_association  = var.create_tg ? 1 : 0
   create_ram_principal_association = var.allow_external_principals == "true" && length(var.ram_principals) != 0 ? length(var.ram_principals) : 0
+  create_tg_vpc_attachment         = var.create_tg && var.vpc_id != "" && length(var.subnet_ids) != 0 ? 1 : 0
 }
 
 resource "aws_ec2_transit_gateway" "this" {
@@ -57,8 +58,8 @@ resource "aws_customer_gateway" "this" {
 #### Manages a Resource Access Manager (RAM) Resource Share ###
 
 resource "aws_ram_resource_share" "this" {
-  count = local.crate_ram_resource_share
-  name  = var.name
+  count                     = local.crate_ram_resource_share
+  name                      = var.name
   allow_external_principals = var.allow_external_principals
   tags = merge(
     {
@@ -76,7 +77,7 @@ resource "aws_ram_resource_share" "this" {
 
 ### Resource association
 resource "aws_ram_resource_association" "this" {
-  count = local.create_ram_resource_association
+  count              = local.create_ram_resource_association
   resource_arn       = aws_ec2_transit_gateway.this[0].arn
   resource_share_arn = aws_ram_resource_share.this[0].id
 }
@@ -89,3 +90,26 @@ resource "aws_ram_principal_association" "this" {
   resource_share_arn = aws_ram_resource_share.this[0].id
 }
 
+######## Create the TG VPC attachment in the Shared Service account...
+resource "aws_ec2_transit_gateway_vpc_attachment" "this" {
+  count                                           = local.create_tg_vpc_attachment
+  subnet_ids                                      = var.subnet_ids
+  transit_gateway_id                              = aws_ec2_transit_gateway.this[0].id
+  vpc_id                                          = var.vpc_id
+  dns_support                                     = var.dns_support
+  ipv6_support                                    = var.ipv6_support
+  transit_gateway_default_route_table_association = var.transit_gateway_default_route_table_association
+  transit_gateway_default_route_table_propagation = var.transit_gateway_default_route_table_propagation
+  tags = merge(
+    {
+      "Name" = format("%s-%s", var.name, "VPC_Attach")
+    },
+    var.additional_tags
+  )
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [
+      tags,
+    ]
+  }
+}
