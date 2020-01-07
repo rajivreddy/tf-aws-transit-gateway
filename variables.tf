@@ -65,3 +65,29 @@ variable "vpn_ecmp_support" {
   description = "Whether VPN Equal Cost Multipath Protocol support is enabled. Valid values: disable, enable"
   default     = "enable"
 }
+
+
+######### For Customer Gateway
+
+variable "default_routing" {
+  type        = string
+  description = "default Routing type allowed values static or dynamic"
+  default     = "static"
+}
+
+variable "bgp_asn" {
+  type        = number
+  description = "The gateway's Border Gateway Protocol (BGP) Autonomous System Number (ASN)."
+  default     = null
+}
+
+variable "ip_address" {
+  type        = string
+  description = "The IP address of the gateway's Internet-routable external interface."
+}
+
+variable "type" {
+  type        = string
+  description = "The type of customer gateway. The only type AWS supports at this time is ipsec.1."
+  default     = "ipsec.1"
+}

@@ -22,3 +22,14 @@ output "propagation_default_route_table_id" {
   description = "Identifier of the default propagation route table"
   value       = aws_ec2_transit_gateway.this.propagation_default_route_table_id
 }
+
+####### Customer Gateway  #############
+
+output "cg_id" {
+  description = "The amazon-assigned ID of the gateway."
+  value       = aws_customer_gateway.this.id
+}
+output "bgp_asn" {
+  description = "The gateway's Border Gateway Protocol (BGP) Autonomous System Number (ASN)."
+  value       = aws_customer_gateway.this.bgp_asn
+}
