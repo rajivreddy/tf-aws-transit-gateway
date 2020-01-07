@@ -22,9 +22,9 @@ variable "additional_tags" {
 
 ######### Transit Gateway #########
 variable "create_tg" {
- type = bool
- description = "Want to create Transit Gateway"
- default = true
+  type        = bool
+  description = "Want to create Transit Gateway"
+  default     = true
 }
 
 variable "name" {
@@ -75,9 +75,9 @@ variable "vpn_ecmp_support" {
 
 ######### For Customer Gateway
 variable "create_cg" {
- type = bool
- description = "Want to create Customer Gateway"
- default = true
+  type        = bool
+  description = "Want to create Customer Gateway"
+  default     = true
 }
 
 variable "default_routing" {
@@ -101,4 +101,19 @@ variable "type" {
   type        = string
   description = "The type of customer gateway. The only type AWS supports at this time is ipsec.1."
   default     = "ipsec.1"
+}
+
+
+##### For RAM ###
+
+variable "allow_external_principals" {
+  type        = string
+  description = "Indicates whether principals outside your organization can be associated with a resource share"
+  default     = "true"
+}
+
+variable "ram_principals" {
+  type        = list(string)
+  description = "The principal to associate with the resource share. Possible values are an AWS account ID, an AWS Organizations Organization ARN, or an AWS Organizations Organization Unit ARN."
+  default     = []
 }

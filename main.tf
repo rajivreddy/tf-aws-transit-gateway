@@ -6,11 +6,14 @@ provider "aws" {
 }
 
 locals {
-  bgp_asn = var.default_routing == "static" ? 65000 : var.bgp_asn
+  bgp_asn                          = var.default_routing == "static" ? 65000 : var.bgp_asn
+  crate_ram_resource_share         = var.create_tg ? 1 : 0
+  create_ram_resource_association  = var.create_tg ? 1 : 0
+  create_ram_principal_association = var.allow_external_principals == "true" && length(var.ram_principals) != 0 ? length(var.ram_principals) : 0
 }
 
 resource "aws_ec2_transit_gateway" "this" {
-  count                            = var.create_tg ? 1 : 0
+  count                           = var.create_tg ? 1 : 0
   description                     = var.description
   dns_support                     = var.dns_support
   amazon_side_asn                 = var.amazon_side_asn
@@ -34,7 +37,7 @@ resource "aws_ec2_transit_gateway" "this" {
 
 # Create customer Gateway for IPSec VPN tunnel
 resource "aws_customer_gateway" "this" {
-  count                            = var.create_cg ? 1 : 0
+  count      = var.create_cg ? 1 : 0
   bgp_asn    = local.bgp_asn
   ip_address = var.ip_address
   type       = var.type
@@ -51,3 +54,38 @@ resource "aws_customer_gateway" "this" {
     ]
   }
 }
+#### Manages a Resource Access Manager (RAM) Resource Share ###
+
+resource "aws_ram_resource_share" "this" {
+  count = local.crate_ram_resource_share
+  name  = var.name
+  allow_external_principals = var.allow_external_principals
+  tags = merge(
+    {
+      "Name" = format("%s-%s", var.name, "RAM")
+    },
+    var.additional_tags
+  )
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [
+      tags,
+    ]
+  }
+}
+
+### Resource association
+resource "aws_ram_resource_association" "this" {
+  count = local.create_ram_resource_association
+  resource_arn       = aws_ec2_transit_gateway.this[0].arn
+  resource_share_arn = aws_ram_resource_share.this[0].id
+}
+
+## Principle/Account association
+
+resource "aws_ram_principal_association" "this" {
+  count              = local.create_ram_principal_association
+  principal          = var.ram_principals[count.index]
+  resource_share_arn = aws_ram_resource_share.this[0].id
+}
+

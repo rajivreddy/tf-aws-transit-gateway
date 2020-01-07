@@ -1,11 +1,19 @@
+# First account
 shared_credentials_file = "/Users/username/.aws/credentials"
-profile = "default"
-region = ap-southeast-1
-create_tg = true
-name = "Example TSG"
+profile                 = "default"
+region                  = ap-southeast-1
+
+# TG Details 
+create_tg   = true
+name        = "Example TSG"
 description = "test TSG"
 
-create_cg = true
+# CG Details
+create_cg       = true
 default_routing = "static"
-bgp_asn = "65000"
-ip_address = "192.168.1.1"
+bgp_asn         = "65000"
+ip_address      = "192.168.1.1"
+
+allow_external_principals = "true"
+
+ram_principals = ["285913126164"]
