@@ -1,35 +1,35 @@
-output "arn" {
+output "tg_arn" {
   description = "EC2 Transit Gateway Amazon Resource Name (ARN)"
-  value       = aws_ec2_transit_gateway.this.arn
+  value       = concat(aws_ec2_transit_gateway.this.*.arn, [""])[0]
 }
 
-output "association_default_route_table_id" {
+output "tg_association_default_route_table_id" {
   description = " Identifier of the default association route table"
-  value       = aws_ec2_transit_gateway.this.association_default_route_table_id
+  value       = concat(aws_ec2_transit_gateway.this.*.association_default_route_table_id, [""])[0]
 }
 
-output "id" {
+output "tg_id" {
   description = " EC2 Transit Gateway identifier"
-  value       = aws_ec2_transit_gateway.this.id
+  value       = concat(aws_ec2_transit_gateway.this.*.id, [""])[0]
 }
 
 output "owner_id" {
   description = "Identifier of the AWS account that owns the EC2 Transit Gateway"
-  value       = aws_ec2_transit_gateway.this.owner_id
+  value       = concat(aws_ec2_transit_gateway.this.*.owner_id, [""])[0]
 }
 
-output "propagation_default_route_table_id" {
+output "tg_propagation_default_route_table_id" {
   description = "Identifier of the default propagation route table"
-  value       = aws_ec2_transit_gateway.this.propagation_default_route_table_id
+  value       = concat(aws_ec2_transit_gateway.this.*.propagation_default_route_table_id, [""])[0]
 }
 
 ####### Customer Gateway  #############
 
 output "cg_id" {
   description = "The amazon-assigned ID of the gateway."
-  value       = aws_customer_gateway.this.id
+  value       = concat(aws_customer_gateway.this.*.id, [""])[0]
 }
-output "bgp_asn" {
+output "cg_bgp_asn" {
   description = "The gateway's Border Gateway Protocol (BGP) Autonomous System Number (ASN)."
-  value       = aws_customer_gateway.this.bgp_asn
+  value       = concat(aws_customer_gateway.this.*.bgp_asn, [""])[0]
 }

@@ -1,9 +1,11 @@
 shared_credentials_file = "/Users/username/.aws/credentials"
 profile = "default"
 region = ap-southeast-1
+create_tg = true
 name = "Example TSG"
 description = "test TSG"
 
+create_cg = true
 default_routing = "static"
 bgp_asn = "65000"
 ip_address = "192.168.1.1"

@@ -21,6 +21,12 @@ variable "additional_tags" {
 }
 
 ######### Transit Gateway #########
+variable "create_tg" {
+ type = bool
+ description = "Want to create Transit Gateway"
+ default = true
+}
+
 variable "name" {
   type        = string
   description = "Name of the EC2 Transit Gateway"
@@ -68,6 +74,11 @@ variable "vpn_ecmp_support" {
 
 
 ######### For Customer Gateway
+variable "create_cg" {
+ type = bool
+ description = "Want to create Customer Gateway"
+ default = true
+}
 
 variable "default_routing" {
   type        = string

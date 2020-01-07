@@ -10,6 +10,7 @@ locals {
 }
 
 resource "aws_ec2_transit_gateway" "this" {
+  count                            = var.create_tg ? 1 : 0
   description                     = var.description
   dns_support                     = var.dns_support
   amazon_side_asn                 = var.amazon_side_asn
@@ -33,6 +34,7 @@ resource "aws_ec2_transit_gateway" "this" {
 
 # Create customer Gateway for IPSec VPN tunnel
 resource "aws_customer_gateway" "this" {
+  count                            = var.create_cg ? 1 : 0
   bgp_asn    = local.bgp_asn
   ip_address = var.ip_address
   type       = var.type
