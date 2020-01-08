@@ -58,12 +58,12 @@ variable "auto_accept_shared_attachments" {
 variable "default_route_table_association" {
   type        = string
   description = "Whether resource attachments are automatically associated with the default association route table. Valid values: disable, enable"
-  default     = "enable"
+  default     = "disable"
 }
 variable "default_route_table_propagation" {
   type        = string
   description = "Whether resource attachments automatically propagate routes to the default propagation route table. Valid values: disable, enable"
-  default     = "enable"
+  default     = "disable"
 }
 
 variable "vpn_ecmp_support" {
@@ -139,10 +139,17 @@ variable "ipv6_support" {
 variable "transit_gateway_default_route_table_association" {
   type = bool
   description = "Boolean whether the VPC Attachment should be associated with the EC2 Transit Gateway association default route table. "
-  default = true
+  default = false
 }
 variable "transit_gateway_default_route_table_propagation" {
   type = bool
   description = "Identifiers of EC2 Subnets."
+  default = false
+}
+
+# Route Tables
+variable "create_tg_route_table" {
+  type = bool
+  description = "Do you want to create an Route table for TF"
   default = true
 }

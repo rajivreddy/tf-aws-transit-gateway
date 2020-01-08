@@ -56,7 +56,6 @@ variable "dns_support" {
   default     = "enable"
 }
 
-
 variable "ipv6_support" {
   type        = string
   description = "Whether IPv6 support is enabled. Valid values: disable, enable. Default value: disable."
@@ -66,10 +65,10 @@ variable "ipv6_support" {
 variable "transit_gateway_default_route_table_association" {
   type        = bool
   description = "Boolean whether the VPC Attachment should be associated with the EC2 Transit Gateway association default route table. "
-  default     = true
+  default     = false
 }
 variable "transit_gateway_default_route_table_propagation" {
   type        = bool
   description = "Identifiers of EC2 Subnets."
-  default     = true
+  default     = false
 }

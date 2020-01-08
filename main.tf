@@ -6,11 +6,12 @@ provider "aws" {
 }
 
 locals {
-  bgp_asn                          = var.default_routing == "static" ? 65000 : var.bgp_asn
-  crate_ram_resource_share         = var.create_tg ? 1 : 0
-  create_ram_resource_association  = var.create_tg ? 1 : 0
-  create_ram_principal_association = var.allow_external_principals == "true" && length(var.ram_principals) != 0 ? length(var.ram_principals) : 0
-  create_tg_vpc_attachment         = var.create_tg && var.vpc_id != "" && length(var.subnet_ids) != 0 ? 1 : 0
+  bgp_asn                            = var.default_routing == "static" ? 65000 : var.bgp_asn
+  crate_ram_resource_share           = var.create_tg ? 1 : 0
+  create_ram_resource_association    = var.create_tg ? 1 : 0
+  create_ram_principal_association   = var.allow_external_principals == "true" && length(var.ram_principals) != 0 ? length(var.ram_principals) : 0
+  create_tg_vpc_attachment           = var.create_tg && var.vpc_id != "" && length(var.subnet_ids) != 0 ? 1 : 0
+  create_transit_gateway_route_table = var.create_tg  && var.create_tg_route_table? 1 : 0
 }
 
 resource "aws_ec2_transit_gateway" "this" {
@@ -80,6 +81,9 @@ resource "aws_ram_resource_association" "this" {
   count              = local.create_ram_resource_association
   resource_arn       = aws_ec2_transit_gateway.this[0].arn
   resource_share_arn = aws_ram_resource_share.this[0].id
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 ## Principle/Account association
@@ -88,6 +92,9 @@ resource "aws_ram_principal_association" "this" {
   count              = local.create_ram_principal_association
   principal          = var.ram_principals[count.index]
   resource_share_arn = aws_ram_resource_share.this[0].id
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 ######## Create the TG VPC attachment in the Shared Service account...
@@ -113,3 +120,29 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "this" {
     ]
   }
 }
+
+##### Managing an EC2 Transit Gateway Route Table.
+
+resource "aws_ec2_transit_gateway_route_table" "this" {
+  count              = local.create_transit_gateway_route_table
+  transit_gateway_id = aws_ec2_transit_gateway.this[0].id
+  tags = merge(
+    {
+      "Name" = format("%s-%s", var.name, "tg_rt")
+    },
+    var.additional_tags
+  )
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [
+      tags,
+    ]
+  }
+}
+
+# ##### Managing Route in Route table
+# resource "aws_ec2_transit_gateway_route" "example" {
+#   destination_cidr_block         = "0.0.0.0/0"
+#   transit_gateway_attachment_id  = "${aws_ec2_transit_gateway_vpc_attachment.example.id}"
+#   transit_gateway_route_table_id = "${aws_ec2_transit_gateway.example.association_default_route_table_id}"
+# }
