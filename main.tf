@@ -145,3 +145,23 @@ resource "aws_ec2_transit_gateway_route_table" "this" {
 #   transit_gateway_attachment_id  = "${aws_ec2_transit_gateway_vpc_attachment.example.id}"
 #   transit_gateway_route_table_id = "${aws_ec2_transit_gateway.example.association_default_route_table_id}"
 # }
+
+resource "aws_vpn_connection" "this" {
+  count      = length(var.cgw_ip_address) != 0 ? length(var.cgw_ip_address) : 0
+  customer_gateway_id = aws_customer_gateway.this[count.index].id
+  transit_gateway_id  = aws_ec2_transit_gateway.this[0].id
+  type       = var.cgw_ip_address[count.index]["type"]
+  static_routes_only = var.static_routes_only
+  tags = merge(
+    {
+     "Name" = format("%s-%s", var.cgw_ip_address[count.index]["name"], "VPN")
+    },
+    var.additional_tags
+  )
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [
+      tags,
+    ]
+  }
+}

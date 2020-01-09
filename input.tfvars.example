@@ -9,9 +9,6 @@ name        = "Example TSG"
 description = "test TSG"
 
 # CG Details
-create_cg       = true
-default_routing = "static"
-bgp_asn         = "65000"
 ip_address      = [
     {
       "bgp_asn" = 65000

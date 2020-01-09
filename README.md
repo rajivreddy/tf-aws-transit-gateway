@@ -31,6 +31,7 @@
 | transit_gateway_default_route_table_association | Boolean whether the VPC Attachment should be associated with the EC2 Transit Gateway association default route table.                                                            | string            |
 | transit_gateway_default_route_table_propagation | Boolean whether the VPC Attachment should propagate routes with the EC2 Transit Gateway propagation default route table                                                          | string            |
 | create_tg_route_table                           | Do you want to create an Route table for TG                                                                                                                                      | bool              |
+| static_routes_only                              | Whether the VPN connection uses static routes exclusively. Static routes must be used for devices that don't support BGP.                                                        | bool              |
 
 Link: https://www.terraform.io/docs/configuration/variables.html
 
@@ -45,8 +46,16 @@ terraform apply -var-file=./input.tfvars
 
 ### Output variables
 
-| Name                | Description                    |
-| ------------------- | ------------------------------ |
-| tg_arn              | EC2 Transit Gateway Amazon Resource Name ARN |
-| tg_association_default_route_table_id   | Identifier of the default association route table         |
-| tg_id | EC2 Transit Gateway identifier  |
+| Name                                  | Description                                                                                |
+| ------------------------------------- | ------------------------------------------------------------------------------------------ |
+| tg_arn                                | EC2 Transit Gateway Amazon Resource Name ARN                                               |
+| tg_association_default_route_table_id | Identifier of the default association route table                                          |
+| tg_id                                 | EC2 Transit Gateway identifier                                                             | owner_id | Identifier of the AWS account that owns the EC2 Transit Gatewa |
+| tg_propagation_default_route_table_id | Identifier of the default propagation route table                                          |
+| cg_id                                 | The amazon-assigned ID of the gateway.                                                     |
+| cg_bgp_asn                            | The gateway's Border Gateway Protocol BGP Autonomous System Number (ASN).                  |
+| ram_resource_share_arn                | The Amazon Resource Name ARN of the resource share.                                        |
+| ram_resource_share_id                 | The Amazon Resource Name ARN of the resource share                                         |
+| ram_resource_associatiom_id           | The Amazon Resource Name ARN of the resource share                                         |
+| ram_principal_association             | The Amazon Resource Name ARN of the Resource Share and the principal, separated by a comma |
+| transit_gateway_vpc_attachment_id     | EC2 Transit Gateway Attachment identifier                                                  |

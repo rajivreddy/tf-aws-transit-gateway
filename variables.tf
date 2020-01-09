@@ -142,3 +142,10 @@ variable "create_tg_route_table" {
   description = "Do you want to create an Route table for TG"
   default = true
 }
+###### VPN attachments
+
+variable "static_routes_only" {
+  type = bool
+  description = "Whether the VPN connection uses static routes exclusively. Static routes must be used for devices that don't support BGP."
+  default = false
+}
