@@ -1,10 +1,12 @@
 variable "shared_credentials_file" {
   type    = string
+  description = "Path of AWS creds"
   default = "/Users/username/.aws/credentials"
 }
 
 variable "profile" {
   type    = string
+  description = "AWS profile to use create these resources"
   default = "default"
 }
 
@@ -74,34 +76,21 @@ variable "vpn_ecmp_support" {
 
 
 ######### For Customer Gateway
-variable "create_cg" {
-  type        = bool
-  description = "Want to create Customer Gateway"
-  default     = true
-}
 
-variable "default_routing" {
-  type        = string
-  description = "default Routing type allowed values static or dynamic"
-  default     = "static"
-}
-
-variable "bgp_asn" {
-  type        = number
-  description = "The gateway's Border Gateway Protocol (BGP) Autonomous System Number (ASN)."
-  default     = null
-}
-
-variable "ip_address" {
-  type        = string
+variable "cgw_ip_address" {
+  type        = list(map(string))
   description = "The IP address of the gateway's Internet-routable external interface."
+  default = [
+    {
+      "bgp_asn" = 65000
+      "ip_address" = "122.175.110.231"
+      "type" = "ipsec.1"
+      "routing" = "static"
+      "name" = "dev-1"
+    }
+  ]
 }
 
-variable "type" {
-  type        = string
-  description = "The type of customer gateway. The only type AWS supports at this time is ipsec.1."
-  default     = "ipsec.1"
-}
 
 
 ##### For RAM ###
@@ -143,13 +132,13 @@ variable "transit_gateway_default_route_table_association" {
 }
 variable "transit_gateway_default_route_table_propagation" {
   type = bool
-  description = "Identifiers of EC2 Subnets."
+  description = "Boolean whether the VPC Attachment should propagate routes with the EC2 Transit Gateway propagation default route table"
   default = false
 }
 
 # Route Tables
 variable "create_tg_route_table" {
   type = bool
-  description = "Do you want to create an Route table for TF"
+  description = "Do you want to create an Route table for TG"
   default = true
 }

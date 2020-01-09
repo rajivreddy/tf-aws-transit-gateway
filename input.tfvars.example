@@ -12,7 +12,15 @@ description = "test TSG"
 create_cg       = true
 default_routing = "static"
 bgp_asn         = "65000"
-ip_address      = "192.168.1.1"
+ip_address      = [
+    {
+      "bgp_asn" = 65000
+      "ip_address" = "127.0.0.1"
+      "type" = "ipsec.1"
+      "routing" = "static"
+      "name" = "dev-1"
+    }
+  ]
 
 allow_external_principals = "true"
 

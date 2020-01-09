@@ -6,7 +6,6 @@ provider "aws" {
 }
 
 locals {
-  bgp_asn                            = var.default_routing == "static" ? 65000 : var.bgp_asn
   crate_ram_resource_share           = var.create_tg ? 1 : 0
   create_ram_resource_association    = var.create_tg ? 1 : 0
   create_ram_principal_association   = var.allow_external_principals == "true" && length(var.ram_principals) != 0 ? length(var.ram_principals) : 0
@@ -39,13 +38,13 @@ resource "aws_ec2_transit_gateway" "this" {
 
 # Create customer Gateway for IPSec VPN tunnel
 resource "aws_customer_gateway" "this" {
-  count      = var.create_cg ? 1 : 0
-  bgp_asn    = local.bgp_asn
-  ip_address = var.ip_address
-  type       = var.type
+  count      = length(var.cgw_ip_address) != 0 ? length(var.cgw_ip_address) : 0
+  bgp_asn    = var.cgw_ip_address[count.index]["bgp_asn"]
+  ip_address = var.cgw_ip_address[count.index]["ip_address"]
+  type       = var.cgw_ip_address[count.index]["type"]
   tags = merge(
     {
-      "Name" = format("%s-%s", var.name, "CG")
+      "Name" = format("%s-%s", var.cgw_ip_address[count.index]["name"], "CG")
     },
     var.additional_tags
   )

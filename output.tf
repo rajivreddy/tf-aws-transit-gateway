@@ -27,7 +27,7 @@ output "tg_propagation_default_route_table_id" {
 
 output "cg_id" {
   description = "The amazon-assigned ID of the gateway."
-  value       = concat(aws_customer_gateway.this.*.id, [""])[0]
+  value       = aws_customer_gateway.this.*.id
 }
 output "cg_bgp_asn" {
   description = "The gateway's Border Gateway Protocol BGP Autonomous System Number (ASN)."
