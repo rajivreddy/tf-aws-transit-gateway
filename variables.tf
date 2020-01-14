@@ -87,6 +87,8 @@ variable "cgw_ip_address" {
       "type" = "ipsec.1"
       "routing" = "static"
       "name" = "dev-1"
+      "tunnel1_inside_cidr" = null
+      "tunnel2_inside_cidr" = null
     }
   ]
 }
@@ -143,6 +145,11 @@ variable "create_tg_route_table" {
   default = true
 }
 ###### VPN attachments
+variable "vpn_gateway_id" {
+  type = string
+  description = "The ID of the Virtual Private Gateway."
+  default = null
+}
 
 variable "static_routes_only" {
   type = bool

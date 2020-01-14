@@ -16,6 +16,10 @@ ip_address      = [
       "type" = "ipsec.1"
       "routing" = "static"
       "name" = "dev-1"
+      "tunnel1_inside_cidr" = ""
+      "tunnel2_inside_cidr" = ""
+      "tunnel1_preshared_key" = ""
+      "tunnel2_preshared_key" = ""
     }
   ]
 

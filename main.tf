@@ -10,7 +10,7 @@ locals {
   create_ram_resource_association    = var.create_tg ? 1 : 0
   create_ram_principal_association   = var.allow_external_principals == "true" && length(var.ram_principals) != 0 ? length(var.ram_principals) : 0
   create_tg_vpc_attachment           = var.create_tg && var.vpc_id != "" && length(var.subnet_ids) != 0 ? 1 : 0
-  create_transit_gateway_route_table = var.create_tg  && var.create_tg_route_table? 1 : 0
+  create_transit_gateway_route_table = var.create_tg && var.create_tg_route_table ? 1 : 0
 }
 
 resource "aws_ec2_transit_gateway" "this" {
@@ -147,14 +147,19 @@ resource "aws_ec2_transit_gateway_route_table" "this" {
 # }
 
 resource "aws_vpn_connection" "this" {
-  count      = length(var.cgw_ip_address) != 0 ? length(var.cgw_ip_address) : 0
-  customer_gateway_id = aws_customer_gateway.this[count.index].id
-  transit_gateway_id  = aws_ec2_transit_gateway.this[0].id
-  type       = var.cgw_ip_address[count.index]["type"]
-  static_routes_only = var.static_routes_only
+  count                 = length(var.cgw_ip_address) != 0 ? length(var.cgw_ip_address) : 0
+  customer_gateway_id   = aws_customer_gateway.this[count.index].id
+  transit_gateway_id    = aws_ec2_transit_gateway.this[0].id
+  vpn_gateway_id        = var.vpn_gateway_id
+  type                  = var.cgw_ip_address[count.index]["type"]
+  static_routes_only    = var.static_routes_only
+  tunnel1_inside_cidr   = var.cgw_ip_address[count.index]["tunnel1_inside_cidr"]
+  tunnel2_inside_cidr   = var.cgw_ip_address[count.index]["tunnel2_inside_cidr"]
+  tunnel1_preshared_key = var.cgw_ip_address[count.index]["tunnel1_preshared_key"] == "" ? null : var.cgw_ip_address[count.index]["tunnel1_preshared_key"]
+  tunnel2_preshared_key = var.cgw_ip_address[count.index]["tunnel2_preshared_key"] == "" ? null : var.cgw_ip_address[count.index]["tunnel2_preshared_key"]
   tags = merge(
     {
-     "Name" = format("%s-%s", var.cgw_ip_address[count.index]["name"], "VPN")
+      "Name" = format("%s-%s", var.cgw_ip_address[count.index]["name"], "VPN")
     },
     var.additional_tags
   )
