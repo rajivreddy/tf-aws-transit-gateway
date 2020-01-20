@@ -179,7 +179,7 @@ resource "aws_ec2_transit_gateway_route_table_association" "vpn" {
   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this[0].id
 }
 
-### Route table association
+### Route table association for VPC attachments
 resource "aws_ec2_transit_gateway_route_table_association" "this" {
   count = length(local.all_transit_gateway_attachment_ids)
   transit_gateway_attachment_id  = local.all_transit_gateway_attachment_ids[count.index]
