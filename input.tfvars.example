@@ -30,3 +30,7 @@ ram_principals = ["285913126164"]
 ### VPC attachment in shared services
 vpc_id = "vpc-xxxxx"
 subnet_ids = ["subnet-xxxx","subnet-xxxx","subnet-xxx"]
+
+## Route Tables Association for attached vpcs
+
+transit_gateway_attachment_ids = ["tgw-attach-0f0bdc7b6e362703e"]

@@ -156,3 +156,9 @@ variable "static_routes_only" {
   description = "Whether the VPN connection uses static routes exclusively. Static routes must be used for devices that don't support BGP."
   default = false
 }
+
+variable "transit_gateway_attachment_ids" {
+  type = list
+  description = " Identifier of EC2 Transit Gateway Attachments"
+  default     = []
+}
