@@ -42,7 +42,7 @@ variable "subnet_ids" {
 
 variable "vpc_id" {
   type        = string
-  description = "Identifiers of EC2 Subnets."
+  description = "Identifiers of VPC."
   default     = ""
 }
 variable "transit_gateway_id" {
@@ -69,6 +69,6 @@ variable "transit_gateway_default_route_table_association" {
 }
 variable "transit_gateway_default_route_table_propagation" {
   type        = bool
-  description = "Identifiers of EC2 Subnets."
+  description = "Boolean whether the VPC Attachment should propagate routes with the EC2 Transit Gateway propagation default route table. This cannot be configured or perform drift detection with Resource Access Manager shared EC2 Transit Gateways"
   default     = false
 }
