@@ -9,28 +9,36 @@ name        = "Example TSG"
 description = "test TSG"
 
 # CG Details
-ip_address      = [
-    {
-      "bgp_asn" = 65000
-      "ip_address" = "127.0.0.1"
-      "type" = "ipsec.1"
-      "routing" = "static"
-      "name" = "dev-1"
-      "tunnel1_inside_cidr" = ""
-      "tunnel2_inside_cidr" = ""
-      "tunnel1_preshared_key" = ""
-      "tunnel2_preshared_key" = ""
-    }
-  ]
+ip_address = [
+  {
+    "bgp_asn"               = 65000
+    "ip_address"            = "127.0.0.1"
+    "type"                  = "ipsec.1"
+    "routing"               = "static"
+    "name"                  = "dev-1"
+    "tunnel1_inside_cidr"   = ""
+    "tunnel2_inside_cidr"   = ""
+    "tunnel1_preshared_key" = ""
+    "tunnel2_preshared_key" = ""
+  }
+]
 
 allow_external_principals = "true"
 
 ram_principals = ["285913126164"]
 
 ### VPC attachment in shared services
-vpc_id = "vpc-xxxxx"
-subnet_ids = ["subnet-xxxx","subnet-xxxx","subnet-xxx"]
+vpc_id     = "vpc-xxxxx"
+subnet_ids = ["subnet-xxxx", "subnet-xxxx", "subnet-xxx"]
 
 ## Route Tables Association for attached vpcs
 
 transit_gateway_attachment_ids = ["tgw-attach-xxxx"]
+
+tg_routes = [
+  {
+    "destination_cidr_block" : "0.0.0.0/0"
+    "blackhole" : "false"
+    "transit_gateway_vpc_attachment_id" : "tgw-attach-xxxx"
+  }
+]

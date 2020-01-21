@@ -189,7 +189,8 @@ resource "aws_ec2_transit_gateway_route_table_association" "this" {
 ### Route propagation for VPN route associations
 
 resource "aws_ec2_transit_gateway_route_table_propagation" "vpn" {
-  transit_gateway_attachment_id  =  aws_vpn_connection.this[0].transit_gateway_attachment_id
+  count                 = length(var.cgw_ip_address) != 0 ? length(var.cgw_ip_address) : 0
+  transit_gateway_attachment_id  =  aws_vpn_connection.this[count.index].transit_gateway_attachment_id
   transit_gateway_route_table_id =  aws_ec2_transit_gateway_route_table.this[0].id
 }
 
@@ -199,4 +200,14 @@ resource "aws_ec2_transit_gateway_route_table_propagation" "vpc" {
   count = length(local.all_transit_gateway_vpc_attachment_ids)
   transit_gateway_attachment_id  =  local.all_transit_gateway_vpc_attachment_ids[count.index]
   transit_gateway_route_table_id =  aws_ec2_transit_gateway_route_table.this[0].id
+}
+
+####### Routes for TG attachments
+
+resource "aws_ec2_transit_gateway_route" "example" {
+  count = length(var.tg_routes)
+  destination_cidr_block         = var.tg_routes[count.index]["destination_cidr_block"]
+  blackhole                      = var.tg_routes[count.index]["blackhole"]
+  transit_gateway_attachment_id  = var.tg_routes[count.index]["transit_gateway_vpc_attachment_id"]
+  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this[0].id
 }

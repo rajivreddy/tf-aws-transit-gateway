@@ -1,13 +1,13 @@
 variable "shared_credentials_file" {
-  type    = string
+  type        = string
   description = "Path of AWS creds"
-  default = "/Users/username/.aws/credentials"
+  default     = "/Users/username/.aws/credentials"
 }
 
 variable "profile" {
-  type    = string
+  type        = string
   description = "AWS profile to use create these resources"
-  default = "default"
+  default     = "default"
 }
 
 variable "region" {
@@ -82,18 +82,16 @@ variable "cgw_ip_address" {
   description = "The IP address of the gateway's Internet-routable external interface."
   default = [
     {
-      "bgp_asn" = 65000
-      "ip_address" = "122.175.110.231"
-      "type" = "ipsec.1"
-      "routing" = "static"
-      "name" = "dev-1"
+      "bgp_asn"             = 65000
+      "ip_address"          = "122.175.110.231"
+      "type"                = "ipsec.1"
+      "routing"             = "static"
+      "name"                = "dev-1"
       "tunnel1_inside_cidr" = null
       "tunnel2_inside_cidr" = null
     }
   ]
 }
-
-
 
 ##### For RAM ###
 
@@ -111,54 +109,66 @@ variable "ram_principals" {
 ########## VPC attachments #############
 
 variable "subnet_ids" {
-  type = list(string)
+  type        = list(string)
   description = "Identifiers of EC2 Subnets."
-  default = []
+  default     = []
 }
 
 variable "vpc_id" {
-  type = string
+  type        = string
   description = "Identifiers of EC2 Subnets."
-  default = ""
+  default     = ""
 }
 variable "ipv6_support" {
-  type = string
+  type        = string
   description = "Whether IPv6 support is enabled. Valid values: disable, enable. Default value: disable."
-  default = "disable"
+  default     = "disable"
 }
 
 variable "transit_gateway_default_route_table_association" {
-  type = bool
+  type        = bool
   description = "Boolean whether the VPC Attachment should be associated with the EC2 Transit Gateway association default route table. "
-  default = false
+  default     = false
 }
 variable "transit_gateway_default_route_table_propagation" {
-  type = bool
+  type        = bool
   description = "Boolean whether the VPC Attachment should propagate routes with the EC2 Transit Gateway propagation default route table"
-  default = false
+  default     = false
 }
 
 # Route Tables
 variable "create_tg_route_table" {
-  type = bool
+  type        = bool
   description = "Do you want to create an Route table for TG"
-  default = true
+  default     = true
 }
 ###### VPN attachments
 variable "vpn_gateway_id" {
-  type = string
+  type        = string
   description = "The ID of the Virtual Private Gateway."
-  default = null
+  default     = null
 }
 
 variable "static_routes_only" {
-  type = bool
+  type        = bool
   description = "Whether the VPN connection uses static routes exclusively. Static routes must be used for devices that don't support BGP."
-  default = false
+  default     = false
 }
 
 variable "transit_gateway_vpc_attachment_ids" {
-  type = list
+  type        = list
   description = " Identifier of EC2 Transit Gateway Attachments"
   default     = []
+}
+##### Routes for Transit Gateway ########
+variable "tg_routes" {
+  type        = list(map(string))
+  description = "Routes for transit gateway attachments"
+  default = [
+    {
+      "destination_cidr_block" : "0.0.0.0/0"
+      "blackhole" : "false"
+      "transit_gateway_vpc_attachment_id" : "tg-attach-xxxx"
+    }
+  ]
 }
