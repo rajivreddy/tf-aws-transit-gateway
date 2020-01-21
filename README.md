@@ -32,6 +32,8 @@
 | transit_gateway_default_route_table_propagation | Boolean whether the VPC Attachment should propagate routes with the EC2 Transit Gateway propagation default route table                                                          | string            |
 | create_tg_route_table                           | Do you want to create an Route table for TG                                                                                                                                      | bool              |
 | static_routes_only                              | Whether the VPN connection uses static routes exclusively. Static routes must be used for devices that don't support BGP.                                                        | bool              |
+| transit_gateway_vpc_attachment_ids              | Identifier of EC2 Transit Gateway Attachments                                                                                                                                    | list              |
+| tg_routes                                       | Routes for transit gateway attachments                                                                                                                                           | list(map(string)) |
 
 Link: https://www.terraform.io/docs/configuration/variables.html
 
