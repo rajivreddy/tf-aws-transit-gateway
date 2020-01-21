@@ -11,7 +11,7 @@ locals {
   create_ram_principal_association   = var.allow_external_principals == "true" && length(var.ram_principals) != 0 ? length(var.ram_principals) : 0
   create_tg_vpc_attachment           = var.create_tg && var.vpc_id != "" && length(var.subnet_ids) != 0 ? 1 : 0
   create_transit_gateway_route_table = var.create_tg && var.create_tg_route_table ? 1 : 0
-  all_transit_gateway_attachment_ids = length(var.transit_gateway_attachment_ids) > 0 && local.create_tg_vpc_attachment > 0 ? concat(var.transit_gateway_attachment_ids,aws_ec2_transit_gateway_vpc_attachment.this.*.id): aws_ec2_transit_gateway_vpc_attachment.this.*.id
+  all_transit_gateway_vpc_attachment_ids = length(var.transit_gateway_vpc_attachment_ids) > 0 && local.create_tg_vpc_attachment > 0 ? concat(var.transit_gateway_vpc_attachment_ids,aws_ec2_transit_gateway_vpc_attachment.this.*.id): aws_ec2_transit_gateway_vpc_attachment.this.*.id
 }
 
 resource "aws_ec2_transit_gateway" "this" {
@@ -181,7 +181,22 @@ resource "aws_ec2_transit_gateway_route_table_association" "vpn" {
 
 ### Route table association for VPC attachments
 resource "aws_ec2_transit_gateway_route_table_association" "this" {
-  count = length(local.all_transit_gateway_attachment_ids)
-  transit_gateway_attachment_id  = local.all_transit_gateway_attachment_ids[count.index]
+  count = length(local.all_transit_gateway_vpc_attachment_ids)
+  transit_gateway_attachment_id  = local.all_transit_gateway_vpc_attachment_ids[count.index]
   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this[0].id
+}
+
+### Route propagation for VPN route associations
+
+resource "aws_ec2_transit_gateway_route_table_propagation" "vpn" {
+  transit_gateway_attachment_id  =  aws_vpn_connection.this[0].transit_gateway_attachment_id
+  transit_gateway_route_table_id =  aws_ec2_transit_gateway_route_table.this[0].id
+}
+
+### Route propagation for VPC route associations
+
+resource "aws_ec2_transit_gateway_route_table_propagation" "vpc" {
+  count = length(local.all_transit_gateway_vpc_attachment_ids)
+  transit_gateway_attachment_id  =  local.all_transit_gateway_vpc_attachment_ids[count.index]
+  transit_gateway_route_table_id =  aws_ec2_transit_gateway_route_table.this[0].id
 }

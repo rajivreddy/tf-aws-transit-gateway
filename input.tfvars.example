@@ -33,4 +33,4 @@ subnet_ids = ["subnet-xxxx","subnet-xxxx","subnet-xxx"]
 
 ## Route Tables Association for attached vpcs
 
-transit_gateway_attachment_ids = ["tgw-attach-0f0bdc7b6e362703e"]
+transit_gateway_attachment_ids = ["tgw-attach-xxxx"]

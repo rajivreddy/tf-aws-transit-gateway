@@ -157,7 +157,7 @@ variable "static_routes_only" {
   default = false
 }
 
-variable "transit_gateway_attachment_ids" {
+variable "transit_gateway_vpc_attachment_ids" {
   type = list
   description = " Identifier of EC2 Transit Gateway Attachments"
   default     = []
