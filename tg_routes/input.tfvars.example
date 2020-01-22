@@ -1,0 +1,4 @@
+# First account
+shared_credentials_file = "/Users/username/.aws/credentials"
+profile                 = "default"
+region                  = ap-southeast-1
