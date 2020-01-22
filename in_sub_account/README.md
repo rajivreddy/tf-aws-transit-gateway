@@ -7,21 +7,21 @@
 
 ## Input variables
 
-| Name                    | Description                               | Type        |
-| ----------------------- | ----------------------------------------- | ----------- |
-| shared_credentials_file | Path of AWS creds identifier              | String      |
-| profile                 | AWS profile to use create these resources | string      |
-| region                  | Region id                                 | string |
-|additional_tags | Additional tags for resources  | map(string)|
-|name|The ARN of the resource share|string|
-|share_arn|The ARN of the resource share|string|
-|subnet_ids|Identifiers of EC2 Subnets|string|
-|vpc_id|Identifiers of VPC|string|
-|transit_gateway_id|Identifier of EC2 Transit Gateway|string|
-|dns_support|Whether DNS support is enabled. Valid values: disable, enable|string|
-|ipv6_support|||
-|transit_gateway_default_route_table_association|Boolean whether the VPC Attachment should be associated with the EC2 Transit Gateway association default route table.|bool|
-|transit_gateway_default_route_table_propagation|Boolean whether the VPC Attachment should propagate routes with the EC2 Transit Gateway propagation default route table. This cannot be configured or perform drift detection with Resource Access Manager shared EC2 Transit Gateways|bool|
+| Name                                            | Description                                                                                                                                                                                                                            | Type        |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| shared_credentials_file                         | Path of AWS creds identifier                                                                                                                                                                                                           | String      |
+| profile                                         | AWS profile to use create these resources                                                                                                                                                                                              | string      |
+| region                                          | Region id                                                                                                                                                                                                                              | string      |
+| additional_tags                                 | Additional tags for resources                                                                                                                                                                                                          | map(string) |
+| name                                            | The ARN of the resource share                                                                                                                                                                                                          | string      |
+| share_arn                                       | The ARN of the resource share                                                                                                                                                                                                          | string      |
+| subnet_ids                                      | Identifiers of EC2 Subnets                                                                                                                                                                                                             | string      |
+| vpc_id                                          | Identifiers of VPC                                                                                                                                                                                                                     | string      |
+| transit_gateway_id                              | Identifier of EC2 Transit Gateway                                                                                                                                                                                                      | string      |
+| dns_support                                     | Whether DNS support is enabled. Valid values: disable, enable                                                                                                                                                                          | string      |
+| ipv6_support                                    |                                                                                                                                                                                                                                        |             |
+| transit_gateway_default_route_table_association | Boolean whether the VPC Attachment should be associated with the EC2 Transit Gateway association default route table.                                                                                                                  | bool        |
+| transit_gateway_default_route_table_propagation | Boolean whether the VPC Attachment should propagate routes with the EC2 Transit Gateway propagation default route table. This cannot be configured or perform drift detection with Resource Access Manager shared EC2 Transit Gateways | bool        |
 
 Link: https://www.terraform.io/docs/configuration/variables.html
 
@@ -36,15 +36,13 @@ terraform apply -var-file=./input.tfvars
 
 ### Output variables
 
-| Name                                  | Description                                                                                |
-| ------------------------------------- | ------------------------------------------------------------------------------------------ |
-|invitation_arn|The ARN of the resource share invitation|
-|share_id|The ID of the resource share as displayed in the console.|
-|status|The status of the invitation (e.g., ACCEPTED, REJECTED).|
-|||
-|||
-|||
-|||
-|||
-|||
-|||
+| Name                              | Description                                                         |
+| --------------------------------- | ------------------------------------------------------------------- |
+| invitation_arn                    | The ARN of the resource share invitation                            |
+| share_id                          | The ID of the resource share as displayed in the console.           |
+| status                            | The status of the invitation (e.g., ACCEPTED, REJECTED).            |
+| receiver_account_id               | The account ID of the receiver account which accepts the invitation |
+| sender_account_id                 | The account ID of the sender account which extends the invitation   |
+| share_name                        | The name of the resource share                                      |
+| resources                         | A list of the resource ARNs shared via the resource share           |
+| transit_gateway_vpc_attachment_id | EC2 Transit Gateway Attachment identifier                           |
