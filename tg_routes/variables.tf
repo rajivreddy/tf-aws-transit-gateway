@@ -24,3 +24,20 @@ variable "additional_tags" {
 
 
 ######### For Route tables #######
+variable "create_rt" {
+    type = bool
+  description = "You want to create Route tables"
+  default     = true
+}
+
+variable "tg_route_table_names" {
+    type = list(map(string))
+  description = "description"
+  default     = []
+}
+
+variable "transit_gateway_id" {
+    type = string
+  description = "Identifier of EC2 Transit Gateway."
+  default     = null
+}
