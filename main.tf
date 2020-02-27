@@ -1,10 +1,3 @@
-provider "aws" {
-  version                 = "> 2.14.0"
-  region                  = var.region
-  shared_credentials_file = var.shared_credentials_file
-  profile                 = var.profile
-}
-
 locals {
   crate_ram_resource_share           = var.create_tg ? 1 : 0
   create_ram_resource_association    = var.create_tg ? 1 : 0
