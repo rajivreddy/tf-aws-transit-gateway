@@ -46,3 +46,7 @@ terraform apply -var-file=./input.tfvars
 | share_name                        | The name of the resource share                                      |
 | resources                         | A list of the resource ARNs shared via the resource share           |
 | transit_gateway_vpc_attachment_id | EC2 Transit Gateway Attachment identifier                           |
+
+### To-Do
+
+- [ ] Update README file

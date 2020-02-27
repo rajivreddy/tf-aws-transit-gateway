@@ -31,10 +31,20 @@ variable "name" {
 }
 
 ### RAM ARN
-variable "share_arn" {
-  type        = string
-  description = "The ARN of the resource share"
-  default     = null
+variable "ram_name" {
+  type = string
+  description = "RAM name"
+  default     = ""
+}
+variable "resource_owner" {
+  type = string
+  description = "RAM owner,default to SELF"
+  default     = "SELF"
+}
+variable "ram_tag" {
+  type = string
+  description = "Tag used to create RAM resource share"
+  default     = ""
 }
 
 ########## VPC attachments #############

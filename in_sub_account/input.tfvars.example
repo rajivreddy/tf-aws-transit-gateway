@@ -5,8 +5,9 @@ source_profile = "default"
 region         = "us-west-2"
 
 
-share_arn = "arn:aws:ram:us-west-2:xxxx:resource-share/76b84296-554e-5b0c-d2b3-2789897a20a3"
-
+ram_name = "example ram"
+resource_owner = "123456789"
+ram_tag = "example"
 
 ### VPC attachment in shared services
 name = "dest"

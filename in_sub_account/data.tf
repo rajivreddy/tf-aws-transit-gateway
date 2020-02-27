@@ -11,6 +11,16 @@ data "aws_subnet_ids" "this" {
   tags = var.subnet_tags
 }
 
+data "aws_ram_resource_share" "this" {
+  name = var.ram_name
+  resource_owner = var.resource_owner
+  filter {
+    name   = "Name"
+    values = [var.ram_tag]
+  }
+}
+
+
 data "aws_ec2_transit_gateway" "this" {
   provider = aws.source
  count = length(var.transit_gateway_tags) >0 && var.transit_gateway_id == "" ? 1 :0 

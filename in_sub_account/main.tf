@@ -5,7 +5,7 @@ locals {
 ######### Accept shared resources in RAM
 
 resource "aws_ram_resource_share_accepter" "this" {
-  share_arn = var.share_arn
+  share_arn = data.aws_ram_resource_share.this.id
 }
 
 ######## Create the VPC attachment in the Dest account...
