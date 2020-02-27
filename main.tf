@@ -76,6 +76,7 @@ resource "aws_ram_resource_association" "this" {
   lifecycle {
     create_before_destroy = true
   }
+  depends_on = [aws_ec2_transit_gateway.this]
 }
 
 ## Principle/Account association
@@ -87,6 +88,7 @@ resource "aws_ram_principal_association" "this" {
   lifecycle {
     create_before_destroy = true
   }
+  depends_on = [aws_ec2_transit_gateway.this,aws_ram_resource_association.this]
 }
 
 ######## Create the TG VPC attachment with in Same account account...
@@ -111,6 +113,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "this" {
       tags,
     ]
   }
+  depends_on = []
 }
 
 resource "aws_vpn_connection" "this" {
@@ -136,6 +139,7 @@ resource "aws_vpn_connection" "this" {
       tags,
     ]
   }
+  depends_on = [aws_customer_gateway.this]
 }
 
 ##### Create Route table for VPN to VPC 
@@ -155,6 +159,7 @@ resource "aws_ec2_transit_gateway_route_table" "this" {
       tags,
     ]
   }
+  depends_on = [aws_ec2_transit_gateway.this]
 }
 
 ### Route tables Association for VPN Attachments
@@ -162,12 +167,14 @@ resource "aws_ec2_transit_gateway_route_table_association" "vpn" {
   count = length(aws_vpn_connection.this.*.id)
   transit_gateway_attachment_id  = aws_vpn_connection.this[count.index].transit_gateway_attachment_id
   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this[0].id
+  depends_on = [aws_vpn_connection.this]
 }
 
 resource "aws_ec2_transit_gateway_route_table_propagation" "vpc" {
   count = length(local.all_transit_gateway_vpc_attachment_ids)
   transit_gateway_attachment_id  =  local.all_transit_gateway_vpc_attachment_ids[count.index]
   transit_gateway_route_table_id =  aws_ec2_transit_gateway_route_table.this[0].id
+  depends_on = [aws_ec2_transit_gateway_vpc_attachment.this]
 }
 ################## Additional Route tables
 
@@ -193,4 +200,5 @@ resource "aws_ec2_transit_gateway_route_table" "additional_rts" {
 resource "aws_ec2_transit_gateway_route_table_association" "vpc" {
   transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.this[0].id
   transit_gateway_route_table_id = data.aws_ec2_transit_gateway_route_table.ss_rt.id
+  depends_on = [aws_ec2_transit_gateway_vpc_attachment.this]
 }
