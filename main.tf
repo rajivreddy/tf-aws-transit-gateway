@@ -3,10 +3,9 @@ locals {
   create_ram_resource_association    = var.create_tg && var.allow_external_principals ? 1 : 0
   create_ram_principal_association   = var.allow_external_principals == "true" && length(var.ram_principals) != 0 ? length(var.ram_principals) : 0
   create_tg_vpc_attachment           = var.create_tg && var.vpc_id != "" && length(var.subnet_ids) != 0 ? 1 : 0
-  create_transit_gateway_route_table = var.create_tg && var.create_tg_route_table ? 1 : 0
   all_transit_gateway_vpc_attachment_ids = length(var.transit_gateway_vpc_attachment_ids) > 0 && local.create_tg_vpc_attachment > 0 ? concat(var.transit_gateway_vpc_attachment_ids,aws_ec2_transit_gateway_vpc_attachment.this.*.id): aws_ec2_transit_gateway_vpc_attachment.this.*.id
 }
-
+#### Create Transit Gateway
 resource "aws_ec2_transit_gateway" "this" {
   count                           = var.create_tg ? 1 : 0
   description                     = var.description
@@ -30,9 +29,9 @@ resource "aws_ec2_transit_gateway" "this" {
   }
 }
 
-# Create customer Gateway for IPSec VPN tunnel
+# Create Customer Gateways for IPSec VPN tunnels
 resource "aws_customer_gateway" "this" {
-  count      = length(var.cgw_ip_address) != 0 ? length(var.cgw_ip_address) : 0
+  count      = length(var.cgw_ip_address) > 0 ? length(var.cgw_ip_address) : 0
   bgp_asn    = var.cgw_ip_address[count.index]["bgp_asn"]
   ip_address = var.cgw_ip_address[count.index]["ip_address"]
   type       = var.cgw_ip_address[count.index]["type"]
@@ -49,7 +48,7 @@ resource "aws_customer_gateway" "this" {
     ]
   }
 }
-#### Manages a Resource Access Manager (RAM) Resource Share ###
+#### Manages a Resource Access Manager (RAM) Resource Share
 
 resource "aws_ram_resource_share" "this" {
   count                     = local.crate_ram_resource_share
@@ -114,32 +113,6 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "this" {
   }
 }
 
-##### Managing an EC2 Transit Gateway Route Table.
-
-resource "aws_ec2_transit_gateway_route_table" "this" {
-  count              = local.create_transit_gateway_route_table
-  transit_gateway_id = aws_ec2_transit_gateway.this[0].id
-  tags = merge(
-    {
-      "Name" = format("%s-%s", var.name, "tg_rt")
-    },
-    var.additional_tags
-  )
-  lifecycle {
-    create_before_destroy = true
-    ignore_changes = [
-      tags,
-    ]
-  }
-}
-
-# ##### Managing Route in Route table
-# resource "aws_ec2_transit_gateway_route" "example" {
-#   destination_cidr_block         = "0.0.0.0/0"
-#   transit_gateway_attachment_id  = "${aws_ec2_transit_gateway_vpc_attachment.example.id}"
-#   transit_gateway_route_table_id = "${aws_ec2_transit_gateway.example.association_default_route_table_id}"
-# }
-
 resource "aws_vpn_connection" "this" {
   count                 = length(var.cgw_ip_address) > 0 ? length(var.cgw_ip_address) : 0
   customer_gateway_id   = aws_customer_gateway.this[count.index].id
@@ -153,7 +126,7 @@ resource "aws_vpn_connection" "this" {
   tunnel2_preshared_key = var.cgw_ip_address[count.index]["tunnel2_preshared_key"] == "" ? null : var.cgw_ip_address[count.index]["tunnel2_preshared_key"]
   tags = merge(
     {
-      "Name" = format("%s-%s", var.cgw_ip_address[count.index]["name"], "VPN")
+      "Name" = format("%s-%s", var.cgw_ip_address[count.index]["name"], "vpn")
     },
     var.additional_tags
   )
@@ -165,42 +138,34 @@ resource "aws_vpn_connection" "this" {
   }
 }
 
-#### Route tables Association for VPN Attachments
-# resource "aws_ec2_transit_gateway_route_table_association" "vpn" {
-#   count = length(aws_vpn_connection.this.*.id)
-#   transit_gateway_attachment_id  = aws_vpn_connection.this[count.index].transit_gateway_attachment_id
-#   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this[0].id
-# }
+##### Create Route table for VPN to VPC 
 
-### Route table association for VPC attachments
-# resource "aws_ec2_transit_gateway_route_table_association" "this" {
-#   count = length(local.all_transit_gateway_vpc_attachment_ids)
-#   transit_gateway_attachment_id  = local.all_transit_gateway_vpc_attachment_ids[count.index]
-#   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this[0].id
-# }
-
-### Route propagation for VPN route associations
-
-resource "aws_ec2_transit_gateway_route_table_propagation" "vpn" {
-  count                 = length(var.cgw_ip_address) != 0 ? length(var.cgw_ip_address) : 0
-  transit_gateway_attachment_id  =  aws_vpn_connection.this[count.index].transit_gateway_attachment_id
-  transit_gateway_route_table_id =  aws_ec2_transit_gateway_route_table.this[0].id
+resource "aws_ec2_transit_gateway_route_table" "this" {
+  count              = var.create_tg_route_table ? 1 : 0
+  transit_gateway_id = aws_ec2_transit_gateway.this[0].id
+  tags = merge(
+    {
+      "Name" = format("%s-%s", var.name, "vpn_route_table")
+    },
+    var.additional_tags
+  )
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [
+      tags,
+    ]
+  }
 }
 
-### Route propagation for VPC route associations
-
-# resource "aws_ec2_transit_gateway_route_table_propagation" "vpc" {
-#   count = length(local.all_transit_gateway_vpc_attachment_ids)
-#   transit_gateway_attachment_id  =  local.all_transit_gateway_vpc_attachment_ids[count.index]
-#   transit_gateway_route_table_id =  aws_ec2_transit_gateway_route_table.this[0].id
-# }
-
-####### Routes for TG attachments
-
-resource "aws_ec2_transit_gateway_route" "example" {
-  count = length(var.tg_routes)
-  destination_cidr_block         = var.tg_routes[count.index]["destination_cidr_block"]
-  blackhole                      = var.tg_routes[count.index]["blackhole"]
-  transit_gateway_attachment_id  = var.tg_routes[count.index]["transit_gateway_vpc_attachment_id"]
+### Route tables Association for VPN Attachments
+resource "aws_ec2_transit_gateway_route_table_association" "vpn" {
+  count = length(aws_vpn_connection.this.*.id)
+  transit_gateway_attachment_id  = aws_vpn_connection.this[count.index].transit_gateway_attachment_id
   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this[0].id
+}
+
+resource "aws_ec2_transit_gateway_route_table_propagation" "vpc" {
+  count = length(local.all_transit_gateway_vpc_attachment_ids)
+  transit_gateway_attachment_id  =  local.all_transit_gateway_vpc_attachment_ids[count.index]
+  transit_gateway_route_table_id =  aws_ec2_transit_gateway_route_table.this[0].id
 }
