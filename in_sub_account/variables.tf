@@ -34,17 +34,20 @@ variable "share_arn" {
 
 ########## VPC attachments #############
 
-variable "subnet_ids" {
-  type        = list(string)
-  description = "Identifiers of EC2 Subnets."
-  default     = []
+variable "subnet_tags" {
+  type        = map
+  description = "Subnet Tags of Subnets."
+  default     = {
+    "Tier" = "worker_nodes"
+    }
 }
 
-variable "vpc_id" {
-  type        = string
-  description = "Identifiers of VPC."
+variable "cidr_block" {
+  type = string
+  description = "CIDR block of VPC"
   default     = ""
 }
+
 variable "transit_gateway_id" {
   type        = string
   description = "Identifier of EC2 Transit Gateway."
