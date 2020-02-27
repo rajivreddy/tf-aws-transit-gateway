@@ -1,44 +1,49 @@
 # First account
 shared_credentials_file = "/Users/username/.aws/credentials"
-profile                 = "default"
-region                  = ap-southeast-1
+# profile                 = "default-tg"
+profile = "default"
 
-# TG Details 
+region = "us-west-2"
+
+# TG Details
 create_tg   = true
-name        = "Example TSG"
-description = "test TSG"
+name        = "example TSG"
+description = "example Transit Gateway for VPC/VPN management"
 
-# CG Details
-ip_address = [
+
+# Customer Gateway Details
+cgw_ip_address = [
   {
     "bgp_asn"               = 65000
-    "ip_address"            = "127.0.0.1"
+    "ip_address"            = "122.175.110.231"
     "type"                  = "ipsec.1"
     "routing"               = "static"
     "name"                  = "dev-1"
-    "tunnel1_inside_cidr"   = ""
-    "tunnel2_inside_cidr"   = ""
+    "tunnel1_inside_cidr"   = "169.254.32.196/30"
+    "tunnel2_inside_cidr"   = "169.254.32.200/30"
     "tunnel1_preshared_key" = ""
     "tunnel2_preshared_key" = ""
   }
 ]
-
 allow_external_principals = "true"
 
-ram_principals = ["285913126164"]
+ram_principals = ["xxxx"]
 
-### VPC attachment in shared services
-vpc_id     = "vpc-xxxxx"
-subnet_ids = ["subnet-xxxx", "subnet-xxxx", "subnet-xxx"]
+### VPC attachment with in same account
+vpc_id     = "vpc-xxx"
+subnet_ids = ["subnet-xxx", "subnet-xxx"]
 
-## Route Tables Association for attached vpcs
-
-transit_gateway_attachment_ids = ["tgw-attach-xxxx"]
-
-tg_routes = [
-  {
-    "destination_cidr_block" : "0.0.0.0/0"
-    "blackhole" : "false"
-    "transit_gateway_vpc_attachment_id" : "tgw-attach-xxxx"
+### additional_rts
+additional_rts = {
+  "ss_vpc_rt" = {
+    "createdby" = "devops"
   }
-]
+  "dest_vpc_rt" = {
+    "createdby" = "devops"
+  }
+}
+
+ss_rt_tags = {
+  "Name"      = "ss_vpc_rt"
+  "createdby" = "devops"
+}

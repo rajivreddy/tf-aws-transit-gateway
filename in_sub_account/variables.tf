@@ -7,6 +7,11 @@ variable "profile" {
   type    = string
   default = "default"
 }
+variable "source_profile" {
+  type    = string
+  description = "description"
+  default     = "default"
+}
 
 variable "region" {
   type    = string
@@ -33,6 +38,17 @@ variable "share_arn" {
 }
 
 ########## VPC attachments #############
+variable "vpc_id" {
+  type = string
+  description = "VPC id of resource"
+  default     = ""
+}
+
+variable "subnet_ids" {
+  type = list
+  description = "VPC id of resource"
+  default     = []
+}
 
 variable "subnet_tags" {
   type        = map
@@ -47,6 +63,14 @@ variable "cidr_block" {
   description = "CIDR block of VPC"
   default     = ""
 }
+variable "transit_gateway_tags" {
+  type        = map
+  description = "transit_gateway Tags"
+  default     = {
+    "Tier" = "worker_nodes"
+    }
+}
+
 
 variable "transit_gateway_id" {
   type        = string
@@ -74,4 +98,21 @@ variable "transit_gateway_default_route_table_propagation" {
   type        = bool
   description = "Boolean whether the VPC Attachment should propagate routes with the EC2 Transit Gateway propagation default route table. This cannot be configured or perform drift detection with Resource Access Manager shared EC2 Transit Gateways"
   default     = false
+}
+####### 
+
+variable "ss_rt_tags" {
+  type = map
+  description = "Tags used for creating SS route tables "
+  default     = {
+    
+  }
+}
+
+variable "dest_rt_tags" {
+  type = map
+  description = "Tags used for creating Dest route tables "
+  default     = {
+    
+  }
 }

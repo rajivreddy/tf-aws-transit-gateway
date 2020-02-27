@@ -1,14 +1,29 @@
 # First account
-shared_credentials_file = "/Users/username/.aws/credentials"
-profile = "destaccount"
-region = "ap-southeast-1"
+shared_credentials_file = "/Users/xxxx/.aws/credentials"
+profile        = "default"
+source_profile = "default"
+region         = "us-west-2"
 
 
-share_arn = "arn:aws:ram:ap-southeast-1:xxx:resource-share/xxxx"
+share_arn = "arn:aws:ram:us-west-2:xxxx:resource-share/76b84296-554e-5b0c-d2b3-2789897a20a3"
 
 
 ### VPC attachment in shared services
 name = "dest"
-transit_gateway_id = "tgw-xxxx"
-vpc_id = "vpc-xxxx"
-subnet_ids = ["subnet-xxxx","subnet-xxxx"]
+cidr_block = "10.20.0.0/16"
+subnet_tags = {
+  "Tier" = "worker_nodes"
+}
+transit_gateway_tags = {
+  "Name" = "TSG-TG"
+}
+
+ss_rt_tags = {
+  "Name"      = "ss_vpc_rt"
+  "createdby" = "devops"
+}
+
+dest_rt_tags = {
+  "Name"      = "dest_vpc_rt"
+  "createdby" = "devops"
+}

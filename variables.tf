@@ -81,7 +81,7 @@ variable "cgw_ip_address" {
   type        = list(map(string))
   description = "The IP address of the gateway's Internet-routable external interface."
   default = [
-    
+
   ]
 }
 # {
@@ -161,15 +161,19 @@ variable "transit_gateway_vpc_attachment_ids" {
   description = " Identifier of EC2 Transit Gateway Attachments"
   default     = []
 }
-##### Routes for Transit Gateway ########
-variable "tg_routes" {
-  type        = list(map(string))
-  description = "Routes for transit gateway attachments"
-  default = [
-    {
-      "destination_cidr_block" : "0.0.0.0/0"
-      "blackhole" : "false"
-      "transit_gateway_vpc_attachment_id" : "tg-attach-xxxx"
-    }
-  ]
+##### Extra Route tables ########
+variable "additional_rts" {
+  type        = map
+  description = "Additional Route tables for Transit Gateway"
+  default = {
+
+  }
+}
+
+variable "ss_rt_tags" {
+  type        = map
+  description = "Tags used for creating SS route tables "
+  default = {
+
+  }
 }

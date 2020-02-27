@@ -37,7 +37,7 @@ resource "aws_customer_gateway" "this" {
   type       = var.cgw_ip_address[count.index]["type"]
   tags = merge(
     {
-      "Name" = format("%s-%s", var.cgw_ip_address[count.index]["name"], "CG")
+      "Name" = format("%s-%s", var.cgw_ip_address[count.index]["name"], "cg")
     },
     var.additional_tags
   )
@@ -56,7 +56,7 @@ resource "aws_ram_resource_share" "this" {
   allow_external_principals = var.allow_external_principals
   tags = merge(
     {
-      "Name" = format("%s-%s", var.name, "RAM")
+      "Name" = format("%s-%s", var.name, "ram")
     },
     var.additional_tags
   )
@@ -145,7 +145,7 @@ resource "aws_ec2_transit_gateway_route_table" "this" {
   transit_gateway_id = aws_ec2_transit_gateway.this[0].id
   tags = merge(
     {
-      "Name" = format("%s-%s", var.name, "vpn_route_table")
+      "Name" = format("%s", "vpn_route_table")
     },
     var.additional_tags
   )
@@ -168,4 +168,29 @@ resource "aws_ec2_transit_gateway_route_table_propagation" "vpc" {
   count = length(local.all_transit_gateway_vpc_attachment_ids)
   transit_gateway_attachment_id  =  local.all_transit_gateway_vpc_attachment_ids[count.index]
   transit_gateway_route_table_id =  aws_ec2_transit_gateway_route_table.this[0].id
+}
+################## Additional Route tables
+
+resource "aws_ec2_transit_gateway_route_table" "additional_rts" {
+  for_each = var.additional_rts
+  transit_gateway_id = aws_ec2_transit_gateway.this[0].id
+  tags = merge(
+    {
+      "Name" = format("%s", each.key)
+    },
+    each.value
+  )
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [
+      tags,
+    ]
+  }
+}
+
+########## Associate VPC accachment to Route table
+
+resource "aws_ec2_transit_gateway_route_table_association" "vpc" {
+  transit_gateway_attachment_id  = aws_ec2_transit_gateway_vpc_attachment.this[0].id
+  transit_gateway_route_table_id = data.aws_ec2_transit_gateway_route_table.ss_rt.id
 }
