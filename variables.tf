@@ -81,17 +81,18 @@ variable "cgw_ip_address" {
   type        = list(map(string))
   description = "The IP address of the gateway's Internet-routable external interface."
   default = [
-    {
-      "bgp_asn"             = 65000
-      "ip_address"          = "122.175.110.231"
-      "type"                = "ipsec.1"
-      "routing"             = "static"
-      "name"                = "dev-1"
-      "tunnel1_inside_cidr" = null
-      "tunnel2_inside_cidr" = null
-    }
+    
   ]
 }
+# {
+#       "bgp_asn"             = 65000
+#       "ip_address"          = "122.175.110.231"
+#       "type"                = "ipsec.1"
+#       "routing"             = "static"
+#       "name"                = "dev-1"
+#       "tunnel1_inside_cidr" = null
+#       "tunnel2_inside_cidr" = null
+#     }
 
 ##### For RAM ###
 

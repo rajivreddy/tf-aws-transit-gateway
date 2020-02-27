@@ -1,6 +1,6 @@
 locals {
-  crate_ram_resource_share           = var.create_tg ? 1 : 0
-  create_ram_resource_association    = var.create_tg ? 1 : 0
+  crate_ram_resource_share           = var.create_tg && var.allow_external_principals ? 1 : 0
+  create_ram_resource_association    = var.create_tg && var.allow_external_principals ? 1 : 0
   create_ram_principal_association   = var.allow_external_principals == "true" && length(var.ram_principals) != 0 ? length(var.ram_principals) : 0
   create_tg_vpc_attachment           = var.create_tg && var.vpc_id != "" && length(var.subnet_ids) != 0 ? 1 : 0
   create_transit_gateway_route_table = var.create_tg && var.create_tg_route_table ? 1 : 0
@@ -18,7 +18,7 @@ resource "aws_ec2_transit_gateway" "this" {
   vpn_ecmp_support                = var.vpn_ecmp_support
   tags = merge(
     {
-      "Name" = format("%s-%s", var.name, "TG")
+      "Name" = format("%s-%s", var.name, "tg")
     },
     var.additional_tags
   )
@@ -90,7 +90,7 @@ resource "aws_ram_principal_association" "this" {
   }
 }
 
-######## Create the TG VPC attachment in the Shared Service account...
+######## Create the TG VPC attachment with in Same account account...
 resource "aws_ec2_transit_gateway_vpc_attachment" "this" {
   count                                           = local.create_tg_vpc_attachment
   subnet_ids                                      = var.subnet_ids
@@ -102,7 +102,7 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "this" {
   transit_gateway_default_route_table_propagation = var.transit_gateway_default_route_table_propagation
   tags = merge(
     {
-      "Name" = format("%s-%s", var.name, "VPC_Attach")
+      "Name" = format("%s-%s-shared-service", var.name, "vpc-attachment")
     },
     var.additional_tags
   )
@@ -141,7 +141,7 @@ resource "aws_ec2_transit_gateway_route_table" "this" {
 # }
 
 resource "aws_vpn_connection" "this" {
-  count                 = length(var.cgw_ip_address) != 0 ? length(var.cgw_ip_address) : 0
+  count                 = length(var.cgw_ip_address) > 0 ? length(var.cgw_ip_address) : 0
   customer_gateway_id   = aws_customer_gateway.this[count.index].id
   transit_gateway_id    = aws_ec2_transit_gateway.this[0].id
   vpn_gateway_id        = var.vpn_gateway_id
@@ -166,18 +166,18 @@ resource "aws_vpn_connection" "this" {
 }
 
 #### Route tables Association for VPN Attachments
-resource "aws_ec2_transit_gateway_route_table_association" "vpn" {
-  count = length(aws_vpn_connection.this.*.id)
-  transit_gateway_attachment_id  = aws_vpn_connection.this[count.index].transit_gateway_attachment_id
-  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this[0].id
-}
+# resource "aws_ec2_transit_gateway_route_table_association" "vpn" {
+#   count = length(aws_vpn_connection.this.*.id)
+#   transit_gateway_attachment_id  = aws_vpn_connection.this[count.index].transit_gateway_attachment_id
+#   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this[0].id
+# }
 
 ### Route table association for VPC attachments
-resource "aws_ec2_transit_gateway_route_table_association" "this" {
-  count = length(local.all_transit_gateway_vpc_attachment_ids)
-  transit_gateway_attachment_id  = local.all_transit_gateway_vpc_attachment_ids[count.index]
-  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this[0].id
-}
+# resource "aws_ec2_transit_gateway_route_table_association" "this" {
+#   count = length(local.all_transit_gateway_vpc_attachment_ids)
+#   transit_gateway_attachment_id  = local.all_transit_gateway_vpc_attachment_ids[count.index]
+#   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this[0].id
+# }
 
 ### Route propagation for VPN route associations
 
@@ -189,11 +189,11 @@ resource "aws_ec2_transit_gateway_route_table_propagation" "vpn" {
 
 ### Route propagation for VPC route associations
 
-resource "aws_ec2_transit_gateway_route_table_propagation" "vpc" {
-  count = length(local.all_transit_gateway_vpc_attachment_ids)
-  transit_gateway_attachment_id  =  local.all_transit_gateway_vpc_attachment_ids[count.index]
-  transit_gateway_route_table_id =  aws_ec2_transit_gateway_route_table.this[0].id
-}
+# resource "aws_ec2_transit_gateway_route_table_propagation" "vpc" {
+#   count = length(local.all_transit_gateway_vpc_attachment_ids)
+#   transit_gateway_attachment_id  =  local.all_transit_gateway_vpc_attachment_ids[count.index]
+#   transit_gateway_route_table_id =  aws_ec2_transit_gateway_route_table.this[0].id
+# }
 
 ####### Routes for TG attachments
 
